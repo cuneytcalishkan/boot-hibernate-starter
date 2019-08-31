@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<timestamp>
+					<fieldName>@ts</fieldName>
+					<pattern>yyyy-MM-dd HH:mm:ss.SSS</pattern>
+				</timestamp>
+				<logLevel />
+				<threadName>
+					<fieldName>thread</fieldName>
+				</threadName>
+				<mdc>
+					<includeMdcKeyName>session.id</includeMdcKeyName>
+				</mdc>
+				<loggerName>
+					<fieldName>logger</fieldName>
+				</loggerName>
+				<message>
+					<fieldName>msg</fieldName>
+				</message>
+				<context />
+				<arguments />
+				<stackTrace>
+					<fieldName>stackTrace</fieldName>
+					<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+						<exclude>net\.sf\.cglib\..*</exclude>
+						<maxDepthPerThrowable>30</maxDepthPerThrowable>
+						<rootCauseFirst>true</rootCauseFirst>
+					</throwableConverter>
+				</stackTrace>
+			</providers>
+		</encoder>
+	</appender>
+
+	<appender name="json" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+			<jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+				<prettyPrint>false</prettyPrint>
+			</jsonFormatter>
+			<timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+			<appendLineSeparator>true</appendLineSeparator>
+		</layout>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

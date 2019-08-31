@@ -1,0 +1,32 @@
+logging:
+  level:
+    org.hibernate.orm: ERROR
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: ERROR
+
+server:
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1024
+  
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        
+  metrics:
+    binders:
+      logback:
+        enabled: false
+        
+        
+tch:
+  server:
+    spring-worker-threads: 10
+  async:
+    core-pool-size: 1
+    max-thread-pool-size: 2
+    keep-alive-seconds: 60
