@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(content = Include.NON_NULL)
+@JsonInclude(value = Include.NON_NULL)
 public class ResponseMessage implements Serializable {
 
 	private static final long serialVersionUID = 8686974307564786722L;

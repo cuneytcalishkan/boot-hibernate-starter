@@ -9,6 +9,9 @@ server:
   compression:
     enabled: true
     min-response-size: 1024
+  undertow:
+    io-threads: 2
+    worker-threads: 4
   
   
 management:
@@ -26,7 +29,3 @@ management:
 tch:
   server:
     spring-worker-threads: 10
-  async:
-    core-pool-size: 1
-    max-thread-pool-size: 2
-    keep-alive-seconds: 60

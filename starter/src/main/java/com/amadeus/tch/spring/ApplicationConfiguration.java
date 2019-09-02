@@ -1,20 +1,23 @@
 package com.amadeus.tch.spring;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.AsyncConfigurer;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import io.micrometer.core.instrument.util.NamedThreadFactory;
 
 @Configuration
-@EnableAsync
-public class ApplicationConfiguration implements AsyncConfigurer {
+public class ApplicationConfiguration implements WebMvcConfigurer {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
@@ -27,15 +30,22 @@ public class ApplicationConfiguration implements AsyncConfigurer {
 	}
 
 	@Override
-	public Executor getAsyncExecutor() {
-		ThreadFactory threadFactory = new CustomizableThreadFactory("async-worker-");
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setThreadFactory(threadFactory);
-		taskExecutor.setCorePoolSize(settings.getAsync().getCorePoolsize());
-		taskExecutor.setMaxPoolSize(settings.getAsync().getMaxThreadPoolSize());
-		taskExecutor.setKeepAliveSeconds(settings.getAsync().getKeepAliveSeconds());
-		taskExecutor.initialize();
-		return taskExecutor;
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+		configurer.setTaskExecutor(new ConcurrentTaskExecutor(sharedTaskExecutor()));
 	}
+	
+	  private ExecutorService sharedTaskExecutor() {
+
+		    ThreadFactory threadFactory = new NamedThreadFactory("spring-worker-");
+		    
+		    ExecutorService svc = new ThreadPoolExecutor(
+		        settings.getServer().getSpringWorkerThreads(),
+		        settings.getServer().getSpringWorkerThreads(),
+		        10, TimeUnit.MILLISECONDS,
+		        new SynchronousQueue<Runnable>(),
+		        threadFactory);
+
+		    return svc;
+		  }
 
 }
